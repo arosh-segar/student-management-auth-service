@@ -1,3 +1,6 @@
+# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
+# More GitHub Actions for Azure: https://github.com/Azure/actions
+
 name: Build and deploy ASP.Net Core app to Azure Web App - student-management-auth
 
 on:
@@ -17,22 +20,15 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.x'
-          include-prerelease: true
-
-      - name: Restore dependencies
-        run: dotnet restore
 
       - name: Build with dotnet
         run: dotnet build --configuration Release
 
       - name: dotnet publish
-        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}\myapp
-
-      - name: List published files for debugging
-        run: dir ${{ github.workspace }}/myapp
+        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
 
       - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: .net-app
           path: ${{env.DOTNET_ROOT}}/myapp
@@ -44,25 +40,26 @@ jobs:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     permissions:
-      id-token: write # This is required for requesting the JWT
+      id-token: write #This is required for requesting the JWT
 
     steps:
       - name: Download artifact from build job
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: .net-app
-
+      
       - name: Login to Azure
-        uses: azure/login@v1
+        uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_22DC509C0FFB445E8F3C25FBC935BE09 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_B304B0565B684DC39F2CA0A07EF99D30 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_04780E84BD224F269CEDE35E37E52D77 }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_FDF7B2CC64934E67B99ADE182995995D }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_51DD8FB7B4C34EFE91C3840696896CE2 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_B4371EE3D8B14118ADD23D81EFDFD677 }}
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
-        uses: azure/webapps-deploy@v2
+        uses: azure/webapps-deploy@v3
         with:
           app-name: 'student-management-auth'
           slot-name: 'Production'
-          package: ${{ github.workspace }}/myapp
+          package: .
+          
